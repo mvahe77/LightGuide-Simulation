@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE gdml [
+	<!ENTITY materials SYSTEM "./FastradModel_materials.xml">
+]>
+
+<!--   GDML translation from the Fastrad file : "v7 without end piece.ray"
+	Processed the 2012/08/02 at 16h54 by the GDML module of Fastrad 3.2.2.1
+	Result file : "v7 without end piece.gdml"
+-->
+
+<gdml xmlns:gdml="http://cern.ch/2001/Schemas/GDML" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+
+
+<define>
+	<constant name="HALFPI" value="pi/2."/>
+	<constant name="PI" value="1.*pi"/>
+	<constant name="TWOPI" value="2.*pi"/>
+	<position name="center"/>
+	<rotation name="identity"/>
+	<rotation name="aligneSurX" y="HALFPI" />
+	<rotation name="aligneSurY" x="HALFPI" />
+	<rotation name="RotateZ" unit="deg" x="0" y="0" z="-45"/>
+
+	<rotation name="RotateX90" unit="deg" x="90" y="0" z="0"/>
+	<rotation name="RotateY90" unit="deg" x="0" y="-90" z="0"/>
+	<rotation name="RotateZ90" unit="deg" x="0" y="0" z="90"/>
+</define>
+
+<!-- Materials definition CallBack -->
+
+&materials;
+
+<solids>
+        <tube aunit="deg" deltaphi="360" lunit="mm" name="sPMT" rmax="30" rmin="0" startphi="0" z="100"/>
+        <box lunit="mm" name="sWLS0x2ef2d90" x="142" y="5" z="800"/>
+	<tube aunit="deg" deltaphi="360" lunit="mm" name="sTube0x2ef33a0" rmax="25.4" rmin="0" startphi="0" z="6.35"/>
+	<box lunit="mm" name="sBox0x2ef3240" x="25.4" y="25.4" z="6.985"/>
+
+	<subtraction name="stube-box0x2f0b860">
+	  <first ref="sTube0x2ef33a0"/>
+	  <second ref="sBox0x2ef3240"/>
+	  <position name="stube-box0x2f0b860_pos" unit="mm" x="0" y="-34.6970452561247" z="0"/>
+	</subtraction>
+	<twistedtrap name = "twisttrap" PhiTwist="1.57" z="400" Theta="0.2" Phi="0.0" y1="35.5"
+		     x1="8" x2="8" y2="35.5" x3="8" x4="8" Alph="0" aunit="rad" lunit= "mm"/>
+
+	<box lunit="mm" name="sBoxWtoLG"      x="142" y="8" z="25.0"/>
+	<box lunit="mm" name="sBoxWtoLGPlane" x="142" y="8" z="0.4"/>
+
+	<tube name = "sSeg1" rmin="80"       rmax="88.0"      z="35.5" deltaphi="46.57" startphi="43.43" aunit="deg" lunit= "mm"/>
+	<tube name = "sSeg2" rmin="90.9"     rmax="98.9"      z="35.5" deltaphi="39.75" startphi="50.25" aunit="deg" lunit= "mm"/>
+	<tube name = "sSeg3" rmin="107.8"    rmax="115.8"     z="35.5" deltaphi="32.62" startphi="57.38" aunit="deg" lunit= "mm"/>
+	<tube name = "sSeg4" rmin="136.3076" rmax="144.3076"  z="35.5" deltaphi="25.23" startphi="64.77" aunit="deg" lunit= "mm"/>
+
+	<tube name = "sSeg5" rmin="72"       rmax="80.0"      z="35.5" deltaphi="46.57" startphi="223.43" aunit="deg" lunit= "mm"/>
+	<tube name = "sSeg6" rmin="82.9"     rmax="90.9"      z="35.5" deltaphi="39.75" startphi="230.25" aunit="deg" lunit= "mm"/>
+	<tube name = "sSeg7" rmin="99.8"     rmax="107.8"     z="35.5" deltaphi="32.62" startphi="237.38" aunit="deg" lunit= "mm"/>
+	<tube name = "sSeg8" rmin="128.3076" rmax="136.3076"  z="35.5" deltaphi="25.23" startphi="244.77" aunit="deg" lunit= "mm"/>
+
+	<tube name = "sSeg9"   rmin="337.0967647332016099"  rmax="372.5967647332016099"     z="8.0"  deltaphi="22.3365282790750044" startphi="157.663471720925003"      aunit="deg" lunit= "mm"/>
+	<tube name = "sSeg10"  rmin="1011.290294199604773"  rmax="1046.7902941996048867"    z="8.0"  deltaphi="7.5304035073701385"  startphi="172.469596492629876"      aunit="deg" lunit= "mm"/>
+	<tube name = "sSeg11"  rmin="1011.290294199604773"  rmax="1046.7902941996048867"    z="8.0"  deltaphi="7.5304035073701385"  startphi="0"                        aunit="deg" lunit= "mm"/>
+	<tube name = "sSeg12"  rmin="337.0967647332016099"  rmax="372.5967647332016099"     z="8.0"  deltaphi="22.3365282790750044" startphi="0"                        aunit="deg" lunit= "mm"/>
+<!--
+-->
+        <tube name = "sSeg13"  rmin="337.0967647332016099"  rmax="372.5967647332016099"     z="8.0"  deltaphi="22.3365282790750044" startphi="-22.3365282790750044"      aunit="deg" lunit= "mm"/>
+	<tube name = "sSeg14"  rmin="1011.290294199604773"  rmax="1046.7902941996048867"    z="8.0"  deltaphi="7.5304035073701385"  startphi="-7.5304035073701385"       aunit="deg" lunit= "mm"/>
+	<tube name = "sSeg15"  rmin="1011.290294199604773"  rmax="1046.7902941996048867"    z="8.0"  deltaphi="7.5304035073701385"  startphi="180"                       aunit="deg" lunit= "mm"/>
+	<tube name = "sSeg16"  rmin="337.0967647332016099"  rmax="372.5967647332016099"     z="8.0"  deltaphi="22.3365282790750044" startphi="180"                       aunit="deg" lunit= "mm"/>
+
+<!--
+-->
+	<sphere name="WorldSphereRef" rmin="0." rmax="3600" startphi="0.0000" deltaphi="360" starttheta="0.0000" deltatheta="180"/>
+</solids>
+
+<structure>
+        <volume name="lPMT">
+      	  <materialref ref="Glass0x2eee130"/>
+	  <solidref ref="sPMT"/>
+	</volume>
+       
+	<volume name="lWLSGDML">
+          <materialref ref="EJ2800x2fc7a90"/> 
+          <solidref ref="sWLS0x2ef2d90"/>
+	</volume>
+
+        <volume name="lTwistTrap">
+      	  <materialref ref="Glass0x2eee130"/>
+	  <solidref ref="twisttrap"/>
+	</volume>
+
+        <volume name="lBoxWtoLG">
+      	  <materialref ref="Glass0x2eee130"/>
+	  <solidref ref="sBoxWtoLG"/>
+	</volume>
+
+        <volume name="lBoxWtoLGPlane">
+      	  <materialref ref="Glass0x2eee130"/>
+	  <solidref ref="sBoxWtoLGPlane"/>
+	</volume>
+
+
+<!-- Start light guide     -->
+        <volume name="lSeg1">
+          <materialref ref="Glass0x2eee130"/>
+          <solidref ref="sSeg1"/>
+	</volume>
+        <volume name="lSeg2">
+          <materialref ref="Glass0x2eee130"/>
+          <solidref ref="sSeg2"/>
+	</volume>
+        <volume name="lSeg3">
+          <materialref ref="Glass0x2eee130"/>
+          <solidref ref="sSeg3"/>
+	</volume>
+        <volume name="lSeg4">
+          <materialref ref="Glass0x2eee130"/>
+          <solidref ref="sSeg4"/>
+	</volume>
+
+
+        <volume name="lSeg5">
+          <materialref ref="Glass0x2eee130"/>
+          <solidref ref="sSeg5"/>
+	</volume>
+        <volume name="lSeg6">
+          <materialref ref="Glass0x2eee130"/>
+          <solidref ref="sSeg6"/>
+	</volume>
+        <volume name="lSeg7">
+          <materialref ref="Glass0x2eee130"/>
+          <solidref ref="sSeg7"/>
+	</volume>
+        <volume name="lSeg8">
+          <materialref ref="Glass0x2eee130"/>
+          <solidref ref="sSeg8"/>
+	</volume>
+
+        <volume name="lSeg9">
+          <materialref ref="Glass0x2eee130"/>
+          <solidref ref="sSeg9"/>
+	</volume>
+
+        <volume name="lSeg10">
+          <materialref ref="Glass0x2eee130"/>
+          <solidref ref="sSeg10"/>
+	</volume>
+
+        <volume name="lSeg11">
+          <materialref ref="Glass0x2eee130"/>
+          <solidref ref="sSeg11"/>
+	</volume>
+
+        <volume name="lSeg12">
+          <materialref ref="Glass0x2eee130"/>
+          <solidref ref="sSeg12"/>
+	</volume>
+
+        <volume name="lSeg13">
+          <materialref ref="Glass0x2eee130"/>
+          <solidref ref="sSeg13"/>
+	</volume>
+
+        <volume name="lSeg14">
+          <materialref ref="Glass0x2eee130"/>
+          <solidref ref="sSeg14"/>
+	</volume>
+
+        <volume name="lSeg15">
+          <materialref ref="Glass0x2eee130"/>
+          <solidref ref="sSeg15"/>
+	</volume>
+
+        <volume name="lSeg16">
+          <materialref ref="Glass0x2eee130"/>
+          <solidref ref="sSeg16"/>
+	</volume>
+
+
+<!-- End   light guide     -->
+	<volume name="Structure_129344992">
+		<materialref ref="VACUUM"/>
+		<solidref ref="WorldSphereRef"/>
+
+		<physvol>
+			<volumeref ref="lPMT"/>
+			<position name="posRef_11" x="0.0" y="-36.5" z="-461.316144099999974"/> 
+			<rotationref ref="identity"/>
+		</physvol>
+		<physvol>
+			<volumeref ref="lWLSGDML"/>
+			<position name="posRef_12" x="0.0" y="5.51" z="400"/>
+			<rotationref ref="identity"/>
+		</physvol>
+
+		<physvol>
+			<volumeref ref="lBoxWtoLG"/>
+			<position name="posRef_12" x="0.0" y="4" z="-12.5"/>
+			<rotationref ref="identity"/>
+		</physvol>
+
+		<physvol>
+			<volumeref ref="lBoxWtoLGPlane"/>
+			<position name="posRef_12" x="0.0" y="4" z="-25.2"/>
+			<rotationref ref="identity"/>
+		</physvol>
+
+		<physvol>
+		  <volumeref ref="lSeg1"/>
+		  <position name="posSeg1" x="53.25" y="-80" z="-25.4"/>
+		  <rotationref ref="RotateY90"/>
+		</physvol>
+
+		<physvol>
+		  <volumeref ref="lSeg2"/>
+		  <position name="posSeg2" x="17.75" y="-91" z="-25.4"/>
+		  <rotationref ref="RotateY90"/>
+		</physvol>
+
+		<physvol>
+		  <volumeref ref="lSeg3"/>
+		  <position name="posSeg3" x="-17.75" y="-107.8" z="-25.4"/>
+		  <rotationref ref="RotateY90"/>
+		</physvol>
+
+		<physvol>
+		  <volumeref ref="lSeg4"/>
+		  <position name="posSeg4" x="-53.25" y="-136.3" z="-25.4"/>
+		  <rotationref ref="RotateY90"/>
+		</physvol>
+
+		<physvol>
+		  <volumeref ref="lSeg5"/>
+		  <position name="posSeg5" x="53.25" y="30" z="-141.6"/>
+		  <rotationref ref="RotateY90"/>
+		</physvol>
+		<physvol>
+		  <volumeref ref="lSeg6"/>
+		  <position name="posSeg6" x="17.75" y="48.9" z="-141.6"/>
+		  <rotationref ref="RotateY90"/>
+		</physvol>
+		<physvol>
+		  <volumeref ref="lSeg7"/>
+		  <position name="posSeg7" x="-17.75" y="73.8" z="-141.6"/>
+		  <rotationref ref="RotateY90"/>
+		</physvol>
+		<physvol>
+		  <volumeref ref="lSeg8"/>
+		  <position name="posSeg8" x="-53.25" y="110.4" z="-141.6"/>
+		  <rotationref ref="RotateY90"/>
+		</physvol>
+
+		<physvol>
+		  <volumeref ref="lSeg9"/>
+		  <position name="posSeg9" x="3.01596764733201610e+02" y="-22" z="-141.6"/>
+		  <rotationref ref="RotateX90"/>
+		</physvol>
+
+		<physvol>
+		  <volumeref ref="lSeg10"/>
+		  <position name="posSeg10" x="1011.2902941996047730" y="-30" z="-141.6"/>
+		  <rotationref ref="RotateX90"/>
+		</physvol>
+
+		<physvol>
+		  <volumeref ref="lSeg11"/>
+		  <position name="posSeg11" x="-1011.2902941996047730" y="-38" z="-141.6"/>
+		  <rotationref ref="RotateX90"/>
+		</physvol>
+
+		<physvol>
+		  <volumeref ref="lSeg12"/>
+		  <position name="posSeg12" x="-3.01596764733201610e+02" y="-46" z="-141.6"/>
+		  <rotationref ref="RotateX90"/>
+		</physvol>
+
+		<physvol>
+		  <volumeref ref="lSeg13"/>
+		  <position name="posSeg13" x="-3.54846764733201610e+02" y="-22" z="-411.3161441"/>
+		  <rotationref ref="RotateX90"/>
+		</physvol>
+<!--
+
+-->
+		<physvol>
+		  <volumeref ref="lSeg14"/>
+		  <position name="posSeg14" x="-1.02904029419960489e+03" y="-30" z="-411.316144099999974"/>
+		  <rotationref ref="RotateX90"/>
+		</physvol>
+
+		<physvol>
+		  <volumeref ref="lSeg15"/>
+		  <position name="posSeg15" x="1.02904029419960489e+03" y="-38" z="-4.11316144099999974e+02"/>
+		  <rotationref ref="RotateX90"/>
+		</physvol>
+
+
+		<physvol>
+		  <volumeref ref="lSeg16"/>
+		  <position name="posSeg16" x="3.54846764733201610e+02" y="-46" z="-411.3161441"/>
+		  <rotationref ref="RotateX90"/>
+		</physvol>
+<!--
+-->
+
+	</volume>
+</structure>
+
+<setup name="Default" version="1.0">
+	<world ref="Structure_129344992"/>
+</setup>
+
+</gdml>

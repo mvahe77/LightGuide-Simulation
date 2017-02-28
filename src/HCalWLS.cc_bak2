@@ -1,0 +1,424 @@
+// --
+#include "HCalWLS.hh"
+
+#include "G4Material.hh"
+#include "G4Box.hh"
+#include "G4Tubs.hh"
+#include "G4Ellipsoid.hh"
+#include "G4LogicalVolume.hh"
+#include "G4PVPlacement.hh"
+#include "G4PVParameterised.hh"
+
+#include "G4VSolid.hh"
+#include "G4SubtractionSolid.hh"
+#include "G4UnionSolid.hh"
+#include "G4IntersectionSolid.hh"
+
+#include "G4UserLimits.hh"
+
+#include "G4VisAttributes.hh"
+#include "G4Colour.hh"
+
+#include "G4ios.hh"
+
+#include "G4NistManager.hh"
+#include "G4Sphere.hh"
+#include "G4OpticalSurface.hh"
+#include "G4LogicalBorderSurface.hh"
+#include "HCalWLSMaterials.hh"
+
+#include "G4OpticalSurface.hh"
+#include "G4LogicalBorderSurface.hh"
+#include "G4MaterialPropertiesTable.hh"
+#include "G4SDManager.hh"
+#include "HCalWLSPmtSD.hh"
+#include "G4SubtractionSolid.hh"
+#include "G4Trap.hh"
+
+#include "G4ThreeVector.hh"
+#include "G4LogicalSkinSurface.hh"
+#include "G4UnionSolid.hh"
+
+#include <string>
+#include <vector>
+
+#include "HCalWLSAnalysisManager.hh"
+#include "HCalWLSConfig.hh"
+#include "HCalWLSMaterials.hh"
+//#include "G4GDMLParser.hh"
+#include <TMath.h>
+#include <G4UnionSolid.hh>
+
+const double d     =   7.0;
+const double dd    = 142.0/6.0;
+const double PMT_R = 25.4;
+
+using namespace std;
+//------------------------------------------------------------------------------
+ 
+HCalWLS::HCalWLS()
+  :solScin(0), logScin(0), phyScin(0)
+{
+  analysisManager = HCalWLSAnalysisManager::getInstance();
+  configManager   = HCalWLSConfig::getInstance();
+  materialManager = HCalWLSMaterialManager::getInstance();
+
+  Init();
+  analysisManager->SetCrystal(this);
+}
+//------------------------------------------------------------------------------
+ 
+HCalWLS::~HCalWLS()
+{
+  //  analysisManager->fout_cer.close();
+}
+//------------------------------------------------------------------------------ 
+void  HCalWLS::Init()
+{
+  ScintRad      = configManager->ScintRad;
+  ScinThick     = configManager->ScinThick;
+  ScinSection   = configManager->ScinSection;
+  ScinToPMTFace = configManager->ScinToPMTFace;
+  LGuideL       = configManager->LGuideL;
+  LGuideWidth   = configManager->LGuideWidth;
+  LGuideHigh    = configManager->LGuideHigh;
+
+  ScinToWLSAirGap = configManager->ScinToWLSAirGap;
+}
+G4VPhysicalVolume* HCalWLS::ConstructWLS( G4LogicalVolume *logicWorld , G4VPhysicalVolume *physWorldTmp,
+					  G4ThreeVector CerPosThreeVector )
+{
+  physWorld = physWorldTmp;
+  G4Material* Glass = G4Material::GetMaterial(G4String("Glass"));
+  G4Material* Al    = G4Material::GetMaterial(G4String("Al"));
+  G4Material* Air   = G4Material::GetMaterial(G4String("G4_AIR"));
+  G4Material* EJ232 = G4Material::GetMaterial(G4String("EJ232"));
+  G4Material* EJ299 = G4Material::GetMaterial(G4String("EJ280"));
+
+  G4double Xpos, Ypos, Zpos;
+  G4ThreeVector pos(0.0,0.0,0.0);
+  const G4double PMT_L = 5.0;
+
+  // -- Aluminum wall, reflective surface
+
+  pos.set(0.0, -LGuideWidth*cm -0.05*cm, 0.5*cm);
+  solWall = new G4Box("sWall" , 2*LGuideWidth*cm , (LGuideWidth-0.1)*cm , LGuideL/2.0*cm );
+  logWall = new G4LogicalVolume( solWall , Al , "lWall", 0 , 0 , 0 );
+  //  phyWall = new G4PVPlacement(0 , pos , logWall , "Wall" , logicWorld , false , 0);
+
+  G4double WLSdX = 142.0/2;
+  G4double WLSdY =   5.0/2;
+  G4double WLSdZ = 800.0/2;
+  G4double BoxdY =   d/2;
+  G4double BoxdZ =   5.0/2;
+
+  const  G4double LGStartShift = 25.0;
+  const  G4double LGEndShift   = 425.0;
+  const  G4double LGMiddle     = 145.0;
+  const  G4double PlanedZ0 = 0.1/2.0;
+  const  G4double PlanedZ = 0.0;
+
+  pos.set( 0 , 3.51*mm , WLSdZ*mm );
+  solWLS = new G4Box( "solBoxWtoLG" , WLSdX *mm , WLSdY *mm , WLSdZ *mm );
+  logWLS = new G4LogicalVolume( solWLS , EJ299 , "lWLS", 0 , 0 , 0 );
+  phyWLS = new G4PVPlacement(0 , pos , logWLS , "WLS" , logicWorld , false , 0 , true );
+
+  pos.set( 0 , BoxdY *mm , -( LGStartShift - 2*PlanedZ0 )/2.0 *mm );
+  solBoxWtoLG = new G4Box( "solBoxWtoLG" , WLSdX *mm , BoxdY *mm , ( LGStartShift/2.0 - PlanedZ0) *mm );
+  logBoxWtoLG = new G4LogicalVolume( solBoxWtoLG , Glass , "lBoxWtoLG", 0 , 0 , 0 );
+  phyBoxWtoLG = new G4PVPlacement(0 , pos , logBoxWtoLG , "BoxWtoLG" , logicWorld , false , 0 , true );
+
+  G4double D1     = LGMiddle - LGStartShift;
+  G4double YShift = 50.0;
+  ConstrucLGPart1( logicWorld , LGStartShift , D1 , YShift ) ;
+
+  pos.set( 0 , BoxdY *mm , -(LGStartShift - PlanedZ0 ) *mm );
+  solBoxWtoLGPlane = new G4Box( "solBoxWtoLGPlane" , WLSdX *mm , BoxdY *mm , PlanedZ0 *mm );
+  logBoxWtoLGPlane = new G4LogicalVolume( solBoxWtoLGPlane , Glass , "lBoxWtoLGPlane", 0 , 0 , 0 );
+  phyBoxWtoLGPlane = new G4PVPlacement(0 , pos , logBoxWtoLGPlane , "BoxWtoLGPlane" , logicWorld , false , 0 , true );
+
+  // pos.set( 0 , -(YShift - 18 ) *mm , -( LGMiddle + PlanedZ ) *mm );
+  // solBoxWtoLGPlane1 = new G4Box( "solBoxWtoLGPlane1" , WLSdX *mm , 20 *mm , 0.05 *mm );
+  // logBoxWtoLGPlane1 = new G4LogicalVolume( solBoxWtoLGPlane1 , Glass , "lBoxWtoLGPlane1", 0 , 0 , 0 );
+  // phyBoxWtoLGPlane1 = new G4PVPlacement(0 , pos , logBoxWtoLGPlane1 , "BoxWtoLGPlane1" , logicWorld , false , 0);
+
+  G4double D2 = LGEndShift - ( LGMiddle + 2 * PlanedZ );
+
+  ConstrucLGPart2( logicWorld , LGEndShift , D2 , YShift ) ;
+
+  //  ConstrucLGPart2Foil( logicWorld , LGEndShift , D , YShift ) ;
+  //  pos.set( 0 , (6.01-(d+YShift+0.1)/2.0)*mm , ( -LGStartShift - ( LGEndShift - LGStartShift )/2.0) *mm );
+  //  G4VSolid*  sFoilVol = MakeFoil( LGStartShift , LGEndShift , D1 , D2 , YShift ) ;
+  //  G4LogicalVolume *lFoilVol = new G4LogicalVolume( sFoilVol , Al , "lFoilVol", 0 , 0 , 0 );
+  //  G4PVPlacement *phyFoilVol = new G4PVPlacement(0 , pos , lFoilVol , "FoilVol" , logicWorld , false , 0);
+
+  pos.set( 0 , -(YShift-5*(d/2.0))*mm  , - ( D2 + LGMiddle + 2 * PlanedZ + 50.0 )*mm);
+  solPMT = new G4Tubs("sPMT", 0.0*mm  , PMT_R*mm , 50 *mm , 0.0*deg , 360.0*deg );
+  logPMT = new G4LogicalVolume( solPMT , Glass , "lPMT", 0 , 0 , 0 );
+  phyPMT = new G4PVPlacement(0 , pos , logPMT , "PMT" , logicWorld , false , 0 , true );
+
+  G4OpticalSurface *AlFoil = materialManager->FindOpticalSurface("Foil");
+  G4LogicalBorderSurface *AlFoilSurf;
+  
+  //  AlFoilSurf = new G4LogicalBorderSurface( "LG to AL" , phyBoxWtoLG      , physWorld , AlFoil );
+  //  AlFoilSurf = new G4LogicalBorderSurface( "LG to AL" , phyBoxWtoLGPlane , physWorld , AlFoil );
+  
+  AlFoilSurf = new G4LogicalBorderSurface( "LG to AL" , phySeg1  , physWorld , AlFoil );
+  AlFoilSurf = new G4LogicalBorderSurface( "LG to AL" , phySeg2  , physWorld , AlFoil );
+  AlFoilSurf = new G4LogicalBorderSurface( "LG to AL" , phySeg3  , physWorld , AlFoil );
+  AlFoilSurf = new G4LogicalBorderSurface( "LG to AL" , phySeg4  , physWorld , AlFoil );
+  AlFoilSurf = new G4LogicalBorderSurface( "LG to AL" , phySeg5  , physWorld , AlFoil );
+  AlFoilSurf = new G4LogicalBorderSurface( "LG to AL" , phySeg6  , physWorld , AlFoil );
+  
+  AlFoilSurf = new G4LogicalBorderSurface( "LG to AL" , phySeg7  , physWorld , AlFoil );
+  AlFoilSurf = new G4LogicalBorderSurface( "LG to AL" , phySeg8  , physWorld , AlFoil );
+  AlFoilSurf = new G4LogicalBorderSurface( "LG to AL" , phySeg9  , physWorld , AlFoil );
+  AlFoilSurf = new G4LogicalBorderSurface( "LG to AL" , phySeg10 , physWorld , AlFoil );
+  AlFoilSurf = new G4LogicalBorderSurface( "LG to AL" , phySeg11 , physWorld , AlFoil );
+  AlFoilSurf = new G4LogicalBorderSurface( "LG to AL" , phySeg12 , physWorld , AlFoil );
+
+  AlFoilSurf = new G4LogicalBorderSurface( "LG to AL" , phyMiddleBox , physWorld , AlFoil );
+  
+  AlFoilSurf = new G4LogicalBorderSurface( "LG to AL" , phySeg13  , physWorld , AlFoil );
+  AlFoilSurf = new G4LogicalBorderSurface( "LG to AL" , phySeg14  , physWorld , AlFoil );
+  AlFoilSurf = new G4LogicalBorderSurface( "LG to AL" , phySeg15  , physWorld , AlFoil );
+  AlFoilSurf = new G4LogicalBorderSurface( "LG to AL" , phySeg16  , physWorld , AlFoil );
+  AlFoilSurf = new G4LogicalBorderSurface( "LG to AL" , phySeg17  , physWorld , AlFoil );
+  AlFoilSurf = new G4LogicalBorderSurface( "LG to AL" , phySeg18  , physWorld , AlFoil );
+  
+  AlFoilSurf = new G4LogicalBorderSurface( "LG to AL" , phySeg19  , physWorld , AlFoil );
+  AlFoilSurf = new G4LogicalBorderSurface( "LG to AL" , phySeg20  , physWorld , AlFoil );
+  AlFoilSurf = new G4LogicalBorderSurface( "LG to AL" , phySeg21  , physWorld , AlFoil );
+  AlFoilSurf = new G4LogicalBorderSurface( "LG to AL" , phySeg22  , physWorld , AlFoil );
+  AlFoilSurf = new G4LogicalBorderSurface( "LG to AL" , phySeg23  , physWorld , AlFoil );
+  AlFoilSurf = new G4LogicalBorderSurface( "LG to AL" , phySeg24  , physWorld , AlFoil );
+
+  //--------- Sensitive detector -------------------------------------
+
+  G4SDManager* SDman = G4SDManager::GetSDMpointer();
+
+  //-- Make the PMT sensitive detector
+  HCalWLSPmtSD* PmtSD = new HCalWLSPmtSD(G4String("PmtSD"));
+  SDman->AddNewDetector(PmtSD);
+  logPMT->SetSensitiveDetector(PmtSD);
+
+  // -- Visualization
+
+  // G4VisAttributes * ScinPlVisAtt = new G4VisAttributes(G4Colour(0.0,1.0,1.0));
+  // logScin->SetVisAttributes(ScinPlVisAtt);
+
+  // //  logWall->SetVisAttributes(G4Color::Grey());
+
+  logWLS->SetVisAttributes(G4Color::Green());
+
+  logPMT->SetVisAttributes(G4Color::Red());
+
+  // logAirGap->SetVisAttributes(G4Color::Green());
+
+  // logAirPln->SetVisAttributes(G4Color::Green());
+
+  logBoxWtoLG->SetVisAttributes(G4Color::Cyan());
+  logBoxWtoLGPlane->SetVisAttributes(G4Color::Blue());
+  //  logBoxWtoLGPlane1->SetVisAttributes(G4Color::Blue());
+  logicWorld->SetVisAttributes(G4VisAttributes::Invisible);
+
+  //  lFoilVol->SetVisAttributes(G4Color::Cyan());
+  //  logBoxWtoLG->SetVisAttributes(G4VisAttributes::Invisible);
+  return NULL;
+}
+G4SubtractionSolid* HCalWLS::ConstructScinSolid()
+{
+  G4Tubs* solTube = new G4Tubs("sTube", 0.0*cm  , ScintRad*cm , ScinThick/2.0*cm , 0.0*deg , 360.0*deg );
+
+  G4double center_shift = sqrt( pow(ScintRad , 2 ) - pow(ScinSection/2.0 , 2 ));
+
+  G4Box*  solBox  = new G4Box("sBox" , ScinSection/2.0*cm , ScinSection/2.0*cm , ScinThick/2.0*cm *1.1 );
+  
+  G4ThreeVector pos(0, -center_shift*cm - ScinSection/2.0*cm , 0 );
+
+  //  G4ThreeVector pos(0, 0 , 0 );
+
+  G4SubtractionSolid* solid = new G4SubtractionSolid("stube-box", solTube , solBox , 0, pos );
+  
+  return solid;
+}
+G4SubtractionSolid* HCalWLS::ConstructScinSolidWrap()
+{
+  G4double FoilThickness = 0.05*cm;
+  
+  G4Tubs* solTube1 = new G4Tubs("sTube1", 0.0*cm  , ScintRad*cm + 2*FoilThickness , ScinThick/2.0*cm + 2*FoilThickness , 
+				0.0*deg , 360.0*deg );
+  G4Tubs* solTube2 = new G4Tubs("sTube2", 0.0*cm  , ScintRad*cm , ScinThick/2.0*cm , 0.0*deg , 360.0*deg );
+
+  G4ThreeVector pos(0,0,0);
+  G4SubtractionSolid* solid1 = new G4SubtractionSolid("tub-tub", solTube1 , solTube2 , 0, pos );
+  
+  G4double center_shift = sqrt( pow(ScintRad , 2 ) - pow(ScinSection/2.0 , 2 ));
+
+  G4Box*  solBox  = new G4Box("sBox" , 2.0*ScinSection/2.0*cm , ScinSection/2.0*cm , ScinThick/2.0*cm * 2.0 );
+  
+  pos.set(0, -center_shift*cm - ScinSection/2.0*cm , 0 );
+
+  G4SubtractionSolid* solid = new G4SubtractionSolid("stube-box", solid1 , solBox , 0, pos );
+
+  return solid;
+}
+void HCalWLS::ConstrucLGPart1( G4LogicalVolume *logicWorld , const G4double LGStartShift , const G4double D , const G4double YShift )
+{
+  G4Material* Glass = G4Material::GetMaterial(G4String("Glass"));
+  G4RotationMatrix *mRotateY = new G4RotationMatrix;
+  mRotateY->rotateY( -90 *degree );
+
+  //  const double Thick = dd/2.0;
+  const double Thick        = (6.0*dd-sqrt(2.0)*PMT_R)/4.0/2.0;
+  const double Thick_Middle = (6.0*dd-4*(2*Thick))/2.0;
+
+  const double S[] = { YShift , YShift - d , YShift - 2*d , YShift - 3*d , YShift - 4*d };
+  double R[5];
+  double angle[5];
+
+  for(G4int ii = 0; ii < 5 ; ii++)
+    {
+      R[ii] = 0.5 * ( (D*D + S[ii]*S[ii])/(2*S[ii]) -d );
+      double ASIN = D/(2*R[ii]+d);
+      double ACOS = TMath::Sqrt( 1 - ASIN*ASIN );
+      angle[ii] = TMath::ACos( ACOS ) * TMath::RadToDeg();
+      G4cout << "R = " << R[ii] << " ang = " << angle[ii] << G4endl;
+    }
+  
+  solSeg1  = new G4Tubs( "sSeg1"  , R[0] *mm , (R[0]  + d)*mm , Thick *mm , ( 90-angle[0])*degree , angle[0] *degree );
+  solSeg2  = new G4Tubs( "sSeg2"  , R[1] *mm , (R[1]  + d)*mm , Thick *mm , ( 90-angle[1])*degree , angle[1] *degree );
+
+  solSeg3  = new G4Tubs( "sSeg3"  , R[2] *mm , (R[2]  + d)*mm , Thick_Middle *mm , ( 90-angle[2])*degree , angle[2] *degree );
+
+  solSeg4  = new G4Tubs( "sSeg4"  , R[3] *mm , (R[3]  + d)*mm , Thick *mm , ( 90-angle[3])*degree , angle[3] *degree );
+  solSeg5  = new G4Tubs( "sSeg5"  , R[4] *mm , (R[4]  + d)*mm , Thick *mm , ( 90-angle[4])*degree , angle[4] *degree );
+
+  solSeg6  = new G4Tubs( "sSeg6"  , R[0] *mm , (R[0]  + d)*mm , Thick *mm , (270-angle[0])*degree , angle[0] *degree );
+  solSeg7  = new G4Tubs( "sSeg7"  , R[1] *mm , (R[1]  + d)*mm , Thick *mm , (270-angle[1])*degree , angle[1] *degree );
+
+  solSeg8  = new G4Tubs( "sSeg8"  , R[2] *mm , (R[2]  + d)*mm , Thick_Middle *mm , (270-angle[2])*degree , angle[2] *degree );
+
+  solSeg9  = new G4Tubs( "sSeg9"  , R[3] *mm , (R[3]  + d)*mm , Thick *mm , (270-angle[3])*degree , angle[3] *degree );
+  solSeg10 = new G4Tubs( "sSeg10" , R[4] *mm , (R[4]  + d)*mm , Thick *mm , (270-angle[4])*degree , angle[4] *degree );
+
+  logSeg1 = new G4LogicalVolume( solSeg1 , Glass , "lSeg1", 0 , 0 , 0 );
+  logSeg2 = new G4LogicalVolume( solSeg2 , Glass , "lSeg2", 0 , 0 , 0 );
+
+  logSeg3 = new G4LogicalVolume( solSeg3 , Glass , "lSeg3", 0 , 0 , 0 );
+
+  logSeg4 = new G4LogicalVolume( solSeg4 , Glass , "lSeg4", 0 , 0 , 0 );
+  logSeg5 = new G4LogicalVolume( solSeg5 , Glass , "lSeg5", 0 , 0 , 0 );
+
+  logSeg6 = new G4LogicalVolume( solSeg6 , Glass , "lSeg6", 0 , 0 , 0 );
+  logSeg7  = new G4LogicalVolume( solSeg7  , Glass , "lSeg7" , 0 , 0 , 0 );
+
+  logSeg8  = new G4LogicalVolume( solSeg8  , Glass , "lSeg8" , 0 , 0 , 0 );
+
+  logSeg9  = new G4LogicalVolume( solSeg9  , Glass , "lSeg9" , 0 , 0 , 0 );
+  logSeg10 = new G4LogicalVolume( solSeg10 , Glass , "lSeg10", 0 , 0 , 0 );
+
+  double zpos1234 = -LGStartShift;
+  double zpos5678 = -( D + LGStartShift );
+
+  double PosX[] = { Thick_Middle + 3.0/2.0 * (2.0*Thick) , Thick_Middle + 1.0/2.0 * (2.0 *Thick) , 0.0 , -(Thick_Middle + 1.0/2.0 * (2.0*Thick)) , -(Thick_Middle + 3.0/2.0 * (2.0 *Thick)) };
+ 
+  phySeg1  = new G4PVPlacement(mRotateY , G4ThreeVector( PosX[0]*mm , -R[0] *mm , zpos1234 *mm ) , logSeg1 , "Seg1" , logicWorld , false , 0  , true);  
+  phySeg2  = new G4PVPlacement(mRotateY , G4ThreeVector( PosX[1]*mm , -R[1] *mm , zpos1234 *mm ) , logSeg2 , "Seg2" , logicWorld , false , 0  , true);
+  phySeg3  = new G4PVPlacement(mRotateY , G4ThreeVector( PosX[2]*mm , -R[2] *mm , zpos1234 *mm ) , logSeg3 , "Seg3" , logicWorld , false , 0  , true);
+  phySeg4  = new G4PVPlacement(mRotateY , G4ThreeVector( PosX[3]*mm , -R[3] *mm , zpos1234 *mm ) , logSeg4 , "Seg4" , logicWorld , false , 0  , true);
+  phySeg5  = new G4PVPlacement(mRotateY , G4ThreeVector( PosX[4]*mm , -R[4] *mm , zpos1234 *mm ) , logSeg5 , "Seg5" , logicWorld , false , 0  , true);
+
+  G4cout << "R = Done "<< G4endl;
+
+  phySeg6  = new G4PVPlacement(mRotateY , G4ThreeVector( PosX[0]*mm , (R[0] + d - S[0]) *mm , zpos5678 *mm ) , logSeg6  , "Seg6"  , logicWorld , false , 0  , true);
+  phySeg7  = new G4PVPlacement(mRotateY , G4ThreeVector( PosX[1]*mm , (R[1] + d - S[1]) *mm , zpos5678 *mm ) , logSeg7  , "Seg7"  , logicWorld , false , 0  , true);
+  phySeg8  = new G4PVPlacement(mRotateY , G4ThreeVector( PosX[2]*mm , (R[2] + d - S[2]) *mm , zpos5678 *mm ) , logSeg8  , "Seg8"  , logicWorld , false , 0  , true);
+  phySeg9  = new G4PVPlacement(mRotateY , G4ThreeVector( PosX[3]*mm , (R[3] + d - S[3]) *mm , zpos5678 *mm ) , logSeg9  , "Seg9"  , logicWorld , false , 0  , true);
+  phySeg10 = new G4PVPlacement(mRotateY , G4ThreeVector( PosX[4]*mm , (R[4] + d - S[4]) *mm , zpos5678 *mm ) , logSeg10 , "Seg10" , logicWorld , false , 0  , true);
+
+}
+
+void HCalWLS::ConstrucLGPart2( G4LogicalVolume *logicWorld , const G4double LGEndShift , const G4double D , const G4double YShift )
+{
+  G4Material* Glass = G4Material::GetMaterial(G4String("Glass"));
+  G4RotationMatrix *mRotateX = new G4RotationMatrix;
+  mRotateX->rotateX( 90 *degree );
+  const double dd_Side   = (6.0*dd-sqrt(2.0)*PMT_R)/4.0;
+  const double dd_Middle = (6.0*dd-4*(dd_Side));
+
+  const double Thick = d/2.0;
+  const double S[] = { dd_Middle/2.0 + 3.0/2.0*dd_Side , dd_Middle/2.0 + 1.0/2.0*dd_Side , dd_Middle/2.0 + 1.0/2.0*dd_Side , dd_Middle/2.0 + 3.0/2.0*dd_Side };
+  double R[4];
+  double angle[4];
+
+  for(G4int ii = 0; ii < 4; ii++)
+    {
+      R[ii] = 0.5 * ( (D*D + S[ii]*S[ii])/(2*S[ii]) -dd_Side );
+      double ASIN = D/(2*R[ii]+dd_Side);
+      double ACOS = TMath::Sqrt( 1 - ASIN*ASIN );
+      angle[ii] = TMath::ACos( ACOS ) * TMath::RadToDeg();
+      G4cout << "R = " << R[ii] << " ang = " << angle[ii] << G4endl;
+    }
+  
+  solSeg13 = new G4Tubs( "sSeg13" , R[0] *mm , (R[0] + dd_Side)*mm , Thick *mm , ( 180-angle[0])*degree , angle[0] *degree );
+  solSeg14 = new G4Tubs( "sSeg14" , R[1] *mm , (R[1] + dd_Side)*mm , Thick *mm , ( 180-angle[1])*degree , angle[1] *degree );
+  //  solSeg15 = new G4Tubs( "sSeg15" , R[2] *mm , (R[2] + dd_Side)*mm , Thick *mm , ( 180-angle[2])*degree , angle[2] *degree );
+  //  solSeg16 = new G4Tubs( "sSeg16" , R[3] *mm , (R[3] + dd_Side)*mm , Thick *mm ,               0*degree , angle[3] *degree );
+  solSeg17 = new G4Tubs( "sSeg17" , R[2] *mm , (R[2] + dd_Side)*mm , Thick *mm ,               0*degree , angle[2] *degree );
+  solSeg18 = new G4Tubs( "sSeg18" , R[3] *mm , (R[3] + dd_Side)*mm , Thick *mm ,               0*degree , angle[3] *degree );
+
+  solMiddleBox = new G4Box("solMiddleBox" , dd_Middle/2.0 *mm , Thick *mm , D/2.0 *mm );
+
+  solSeg19 = new G4Tubs( "sSeg19" , R[0] *mm , (R[0] + dd_Side)*mm , Thick *mm ,       -angle[0]*degree , angle[0] *degree );
+  solSeg20 = new G4Tubs( "sSeg20" , R[1] *mm , (R[1] + dd_Side)*mm , Thick *mm ,       -angle[1]*degree , angle[1] *degree );
+  //  solSeg21 = new G4Tubs( "sSeg21" , R[2] *mm , (R[2] + dd_Side)*mm , Thick *mm ,       -angle[2]*degree , angle[2] *degree );
+  //  solSeg22 = new G4Tubs( "sSeg22" , R[3] *mm , (R[3] + dd_Side)*mm , Thick *mm ,             180*degree , angle[3] *degree );
+  solSeg23 = new G4Tubs( "sSeg23" , R[2] *mm , (R[2] + dd_Side)*mm , Thick *mm ,             180*degree , angle[2] *degree );
+  solSeg24 = new G4Tubs( "sSeg24" , R[3] *mm , (R[3] + dd_Side)*mm , Thick *mm ,             180*degree , angle[3] *degree );
+
+  logSeg13 = new G4LogicalVolume( solSeg13 , Glass , "lSeg13" , 0 , 0 , 0 );
+  logSeg14 = new G4LogicalVolume( solSeg14 , Glass , "lSeg14" , 0 , 0 , 0 );
+  //  logSeg15 = new G4LogicalVolume( solSeg15 , Glass , "lSeg15" , 0 , 0 , 0 );
+  //  logSeg16 = new G4LogicalVolume( solSeg16 , Glass , "lSeg16" , 0 , 0 , 0 );
+  logSeg17 = new G4LogicalVolume( solSeg17 , Glass , "lSeg17" , 0 , 0 , 0 );
+  logSeg18 = new G4LogicalVolume( solSeg18 , Glass , "lSeg18" , 0 , 0 , 0 );
+
+  logMiddleBox = new G4LogicalVolume( solMiddleBox , Glass , "lMiddleBox", 0 , 0 , 0 );
+
+
+  logSeg19 = new G4LogicalVolume( solSeg19 , Glass , "lSeg19", 0 , 0 , 0 );
+  logSeg20 = new G4LogicalVolume( solSeg20 , Glass , "lSeg20", 0 , 0 , 0 );
+  //  logSeg21 = new G4LogicalVolume( solSeg21 , Glass , "lSeg21", 0 , 0 , 0 );
+  //  logSeg22 = new G4LogicalVolume( solSeg22 , Glass , "lSeg22", 0 , 0 , 0 );
+  logSeg23 = new G4LogicalVolume( solSeg23 , Glass , "lSeg23", 0 , 0 , 0 );
+  logSeg24 = new G4LogicalVolume( solSeg24 , Glass , "lSeg24", 0 , 0 , 0 );
+
+  double zpos1234 = -( LGEndShift - D );
+  double zpos5678 = -D + zpos1234;
+  double PosX[] = { dd_Middle/2.0 + 3/2.0 *dd_Side , dd_Middle/2.0 + 1/2.0 *dd_Side , -dd_Middle/2.0 - 1.0/2.0*dd_Side , -dd_Middle/2.0 - 3./2 *dd_Side };
+
+  double PosY[] = {  -(YShift-9*Thick) , -(YShift-7*Thick) , -(YShift-3*Thick) , -(YShift-1*Thick) };
+  
+  phySeg13  = new G4PVPlacement(mRotateX , G4ThreeVector(  (R[0]-1*dd_Side-dd_Middle/2.0) *mm , PosY[0]*mm , zpos1234 *mm )             , logSeg13 , "Seg13"  , logicWorld , false , 0  , true);
+  phySeg14  = new G4PVPlacement(mRotateX , G4ThreeVector(  (R[1]-0*dd_Side-dd_Middle/2.0) *mm , PosY[1]*mm , zpos1234 *mm )             , logSeg14 , "Seg14"  , logicWorld , false , 0  , true);
+  //  phySeg15  = new G4PVPlacement(mRotateX , G4ThreeVector(   R[2]       *mm , PosY[2]*mm , zpos1234 *mm )             , logSeg15 , "Seg15"  , logicWorld , false , 0  , true);
+  //  phySeg16  = new G4PVPlacement(mRotateX , G4ThreeVector(  -R[3]       *mm , PosY[3]*mm , zpos1234 *mm )             , logSeg16 , "Seg16"  , logicWorld , false , 0  , true);
+  phySeg17  = new G4PVPlacement(mRotateX , G4ThreeVector( -(R[2]-0*dd_Side-dd_Middle/2.0) *mm , PosY[2]*mm , zpos1234 *mm )             , logSeg17 , "Seg17"  , logicWorld , false , 0  , true);
+  phySeg18  = new G4PVPlacement(mRotateX , G4ThreeVector( -(R[3]-1*dd_Side-dd_Middle/2.0) *mm , PosY[3]*mm , zpos1234 *mm )             , logSeg18 , "Seg18"  , logicWorld , false , 0  , true);
+
+  phyMiddleBox  = new G4PVPlacement(0 , G4ThreeVector( 0 *mm , -(YShift-5*Thick)*mm , (zpos1234-D/2.0) *mm )  , logMiddleBox , "Seg19"  , logicWorld , false , 0  , true);  
+
+  phySeg19  = new G4PVPlacement(mRotateX , G4ThreeVector( -( R[0] + dd_Side/2.0 ) *mm , PosY[0]*mm , zpos5678 *mm )  , logSeg19 , "Seg19"  , logicWorld , false , 0  , true);
+  phySeg20  = new G4PVPlacement(mRotateX , G4ThreeVector( -( R[1] + dd_Side/2.0 ) *mm , PosY[1]*mm , zpos5678 *mm )  , logSeg20 , "Seg20"  , logicWorld , false , 0  , true);
+  //  phySeg21  = new G4PVPlacement(mRotateX , G4ThreeVector( -( R[2] + dd_Side - dd_Side/2.0 ) *mm , PosY[2]*mm , zpos5678 *mm )  , logSeg21 , "Seg21"  , logicWorld , false , 0  , true);
+  //  phySeg22  = new G4PVPlacement(mRotateX , G4ThreeVector(  ( R[3] + dd_Side - dd_Side/2.0 ) *mm , PosY[3]*mm , zpos5678 *mm )  , logSeg22 , "Seg22"  , logicWorld , false , 0  , true);
+  phySeg23  = new G4PVPlacement(mRotateX , G4ThreeVector(  ( R[2] + dd_Side/2.0 ) *mm , PosY[2]*mm , zpos5678 *mm )  , logSeg23 , "Seg23"  , logicWorld , false , 0  , true);
+  phySeg24  = new G4PVPlacement(mRotateX , G4ThreeVector(  ( R[3] + dd_Side/2.0 ) *mm , PosY[3]*mm , zpos5678 *mm )  , logSeg24 , "Seg24"  , logicWorld , false , 0  , true);
+
+  //221-160-221
+  logMiddleBox->SetVisAttributes(G4Color::G4Colour( 221/255.0 , 160/255.0 , 221/255.0 , 0. ));  
+  logSeg3->SetVisAttributes(G4Color::G4Colour( 221/255.0 , 160/255.0 , 221/255.0 , 0. ));  
+  logSeg8->SetVisAttributes(G4Color::G4Colour( 221/255.0 , 160/255.0 , 221/255.0 , 0. ));  
+
+}

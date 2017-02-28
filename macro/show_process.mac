@@ -1,0 +1,37 @@
+# Create a drawByCharge model (will get default name of drawCharge-0)
+/vis/modeling/trajectories/create/drawByCharge
+# Create another drawByCharge model with an explicit name of testChargeModel
+/vis/modeling/trajectories/create/drawByCharge testChargeModel
+# We can now go on to configure these two different drawByCharge models and then
+# can choose to visualize using either one of them at any time
+# Configure drawByCharge-0 model
+/vis/modeling/trajectories/drawByCharge-0/set 1 red
+/vis/modeling/trajectories/drawByCharge-0/set -1 red
+/vis/modeling/trajectories/drawByCharge-0/set 0 white
+# Configure testCharge model through G4Colour components
+/vis/modeling/trajectories/testChargeModel/setRGBA 1 0 1 1 1
+/vis/modeling/trajectories/testChargeModel/setRGBA -1 0.5 0.5 0.5 1
+/vis/modeling/trajectories/testChargeModel/setRGBA 0 1 1 0 1
+# List available models
+/vis/modeling/trajectories/list
+# select drawByCharge-0 to be current
+/vis/modeling/trajectories/select drawByCharge-0
+#
+/vis/modeling/trajectories/create/drawByAttribute
+/vis/modeling/trajectories/drawByCharge-0/verbose true
+/vis/modeling/trajectories/drawByCharge-0/setAttribute CPN
+#
+/vis/modeling/trajectories/drawByAttribute-0/addValue brem_key eBrem
+/vis/modeling/trajectories/drawByAttribute-0/addValue annihil_key annihil
+/vis/modeling/trajectories/drawByAttribute-0/addValue decay_key Decay
+/vis/modeling/trajectories/drawByAttribute-0/addValue muIon_key muIoni
+/vis/modeling/trajectories/drawByAttribute-0/addValue eIon_key eIoni
+#
+/vis/modeling/trajectories/drawByAttribute-0/brem_key/setLineColour red
+/vis/modeling/trajectories/drawByAttribute-0/annihil_key/setLineColour green
+/vis/modeling/trajectories/drawByAttribute-0/decay_key/setLineColour cyan
+/vis/modeling/trajectories/drawByAttribute-0/eIon_key/setLineColour yellow
+/vis/modeling/trajectories/drawByAttribute-0/muIon_key/setLineColour magenta
+#
+
+

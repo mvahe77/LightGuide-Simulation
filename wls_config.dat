@@ -1,0 +1,13 @@
+# Units are cm, degree, atmosphere, GeV
+#
+#
+Scintilator radius: 2.54
+Scintilator thickness: 0.635
+Scintilator section: 2.54
+Scintilator to PMT face: 75.0
+Light guide length: 80.0
+Light guide width and high: 14.6, 0.5
+Air gap between SCIN and WLS: 0.05
+#
+#
+#Scintilator to PMT face: 3.81 or 48.895

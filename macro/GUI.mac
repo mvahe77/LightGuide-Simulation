@@ -1,0 +1,61 @@
+
+#########################
+# Set of the verboses 
+#
+/control/verbose 1
+/tracking/verbose 0
+/run/verbose 1
+/event/verbose 0
+#/comp/phys/verbose 0
+
+##########################
+# Set of the physic models
+#
+#/testhadr/Physics QGSP_BIC_HP
+#/testhadr/Physics QBBC
+/testhadr/Physics QGSP_BERT
+/testhadr/Optics on
+/testhadr/OpticsDebug onf
+
+##########################
+# Initialisation procedure
+#
+/run/initialize
+##########################
+# Visualisation 
+#
+/vis/scene/create
+/vis/open OGLIQt
+#/vis/open OGLSXm
+/vis/viewer/flush
+/vis/viewer/set/viewpointThetaPhi 0 0 deg
+/vis/viewer/zoom 1
+/vis/viewer/pan -10  0 cm
+/tracking/storeTrajectory 1
+/vis/scene/add/trajectories
+/vis/scene/endOfEventAction accumulate
+/control/execute macro/show_yz.mac
+/vis/viewer/update
+
+##########################
+# Set here the cut and the step max for the tracking. 
+# Suggested values of cut and step:
+#
+#/physic/setCuts 0.01 mm
+#/Step/waterPhantomStepMax 0.01 mm 
+
+#########################
+# Set the primary particle type,
+# energy and position along the X direction
+#
+#########################
+# Display the event number
+# during the run
+# 
+#########################
+# Start of the run
+#
+
+/control/execute macro/GUIPersonalisation.mac
+/vis/scene/endOfEventAction accumulate
+/vis/geometry/set/forceLineSegmentsPerCircle all 0 200

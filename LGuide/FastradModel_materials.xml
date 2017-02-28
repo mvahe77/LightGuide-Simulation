@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--   GDML materials definition from the Fastrad file : "Lguide_vahe.ray"
+	Processed the 19/07/2012 at 21h09 by the GDML module of Fastrad 3.2.2.1 -->
+  <define>
+    <constant name="YIELDRATIO" value="1"/>
+
+    <matrix coldim="2" name="ABSLENGTH0x2f09d10" values="2.21429e-06 4200 5.27660e-06 4200.0"/>
+    <matrix coldim="2" name="RINDEX0x2f0aa60" values="2.21429e-06 1.49 5.27660e-06 1.49"/>
+
+    <matrix coldim="2" name="RINDEX0x2ef4a40" values="2.21429e-06 1.58 5.27660e-6 1.58"/>
+    <matrix coldim="2" name="WLSABSLENGTH0x2ef5030" values="
+							   2.21429e-06   134960
+							   2.23423e-06   134960
+							   2.25455e-06   134960
+							   2.27523e-06   134960
+							   2.29630e-06   134960
+							   2.31776e-06   134960
+							   2.33962e-06   134960
+							   2.36190e-06   134960
+							   2.38462e-06   134960
+							   2.40777e-06   134960
+							   2.43137e-06   134960
+							   2.45545e-06   134960
+							   2.48000e-06   134960
+							   2.50505e-06   134960
+							   2.53061e-06   134960
+							   2.55670e-06   134960
+							   2.58333e-06   134960
+							   2.61053e-06   134960
+							   2.63830e-06   134960
+							   2.66667e-06   134960
+							   2.69565e-06   134960
+							   2.72527e-06   134960
+							   2.75556e-06   134960
+							   2.78652e-06   134960
+							   2.81818e-06   134960
+							   2.85057e-06   33740
+							   2.88372e-06   9640
+							   2.91765e-06   4500
+							   2.95238e-06   2450
+							   2.98795e-06   960
+							   3.02439e-06   54
+							   3.06173e-06   7.1
+							   3.10000e-06   2.7
+							   3.13924e-06   1.35
+							   3.17949e-06   0.84
+							   3.22078e-06   0.6
+							   3.26316e-06   0.45
+							   3.30667e-06   0.36
+							   3.35135e-06   0.3
+							   3.39726e-06   0.26
+							   3.44444e-06   0.25
+							   3.49296e-06   0.24
+							   3.54286e-06   0.24
+							   3.59420e-06   0.26
+							   3.64706e-06   0.29
+							   3.70149e-06   0.32
+							   3.75758e-06   0.36
+							   3.81538e-06   0.43
+							   3.87500e-06   0.5
+							   3.93651e-06   0.61
+							   4.00000e-06   0.75
+							   4.06557e-06   0.95
+							   4.13333e-06   1.23
+							   4.20339e-06   1.64
+							   4.27586e-06   2.14
+							   4.35088e-06   2.75
+							   4.42857e-06   3.29
+							   4.50909e-06   3.29
+							   4.59259e-06   3.29
+							   4.67925e-06   3.29
+							   4.76923e-06   3.29
+							   4.86275e-06   3.29
+							   4.96000e-06   3.29
+							   5.06122e-06   3.29
+							   5.16667e-06   3.29
+							   5.27660e-06   3.29"
+	   />
+
+   <matrix coldim="2" name="WLSCOMPONENT0x2ef5d50" values="
+                                                           2.21429e-06   0.0
+                                                           2.23423e-06   0.0
+                                                           2.25455e-06   0.0
+                                                           2.27523e-06   0.0
+                                                           2.29630e-06   0.011
+                                                           2.31776e-06   0.013
+                                                           2.33962e-06   0.016
+                                                           2.36190e-06   0.022
+                                                           2.38462e-06   0.029
+                                                           2.40777e-06   0.033
+                                                           2.43137e-06   0.042
+                                                           2.45545e-06   0.05
+                                                           2.48000e-06   0.06
+                                                           2.50505e-06   0.075
+                                                           2.53061e-06   0.092
+                                                           2.55670e-06   0.12
+                                                           2.58333e-06   0.145
+                                                           2.61053e-06   0.173
+                                                           2.63830e-06   0.198
+                                                           2.66667e-06   0.228
+                                                           2.69565e-06   0.3
+                                                           2.72527e-06   0.395
+                                                           2.75556e-06   0.46
+                                                           2.78652e-06   0.514
+                                                           2.81818e-06   0.549
+                                                           2.85057e-06   0.61
+                                                           2.88372e-06   0.74
+                                                           2.91765e-06   0.92
+                                                           2.95238e-06   1.0
+                                                           2.98795e-06   0.899
+                                                           3.02439e-06   0.754
+                                                           3.06173e-06   0.756
+                                                           3.10000e-06   0.853
+                                                           3.13924e-06   0.786
+                                                           3.17949e-06   0.423
+                                                           3.22078e-06   0.141
+                                                           3.26316e-06   0.06
+                                                           3.30667e-06   0.016
+                                                           3.35135e-06   0.0
+                                                           3.39726e-06   0.0
+                                                           3.44444e-06   0.0
+                                                           3.49296e-06   0.0
+                                                           3.54286e-06   0.0
+                                                           3.59420e-06   0.0
+                                                           3.64706e-06   0.0
+                                                           3.70149e-06   0.0
+                                                           3.75758e-06   0.0
+                                                           3.81538e-06   0.0
+                                                           3.87500e-06   0.0
+                                                           3.93651e-06   0.0
+                                                           4.00000e-06   0.0
+                                                           4.06557e-06   0.0
+                                                           4.13333e-06   0.0
+                                                           4.20339e-06   0.0
+                                                           4.27586e-06   0.0
+                                                           4.35088e-06   0.0
+                                                           4.42857e-06   0.0
+                                                           4.50909e-06   0.0
+                                                           4.59259e-06   0.0
+                                                           4.67925e-06   0.0
+                                                           4.76923e-06   0.0
+                                                           4.86275e-06   0.0
+                                                           4.96000e-06   0.0
+							   5.06122e-06   0.0
+							   5.16667e-06   0.0
+							   5.27660e-06   0.0"
+	   />
+
+   <constant name="WLSTIMECONSTANT" value="1.5"/>
+
+    <matrix coldim="2" name="ABSLENGTH0x2f72d70" values="2.21429e-06 995 2.23423e-06 995 2.25455e-06 995 2.27523e-06 995 2.2963e-06 995 2.31776e-06 995"/>
+    <matrix coldim="2" name="FASTCOMPONENT0x2eefa00" values="2.21429e-06 0 2.23423e-06 0 2.25455e-06 0 2.27523e-06 0 2.2963e-06 0 2.31776e-06 0 2.33962e-06 0"/>
+    <matrix coldim="2" name="RINDEX0x2fc1ff0" values="2.21429e-06 1.58 2.23423e-06 1.58 2.25455e-06 1.58 2.27523e-06 1.58 2.2963e-06 1.58 2.31776e-06 1.58"/>
+
+    <matrix coldim="2" name="RINDEX0x2955d50" values="2.21429e-06 1 5.27660e-06 1"/>
+
+  </define>
+
+<materials>
+	<element name="videRef" formula="VACUUM" Z="1">
+		<atom value="1"/>
+	</element>
+	<element name="aluminum" formula="Al" Z="13">
+		<atom value="26.9815"/>
+	</element>
+	<element name="silicon" formula="Si" Z="14">
+		<atom value="28.0855"/>
+	</element>
+	<element Z="6" name="Carbon0x2fc4110">
+	  <atom unit="g/mole" value="12.01"/>
+	</element>
+	<element Z="1" name="Hidrogen0x2fc3f90">
+	  <atom unit="g/mole" value="1.01"/>
+	</element>
+	<material name="VACUUM" formula="VACUUM">
+	         <property name="RINDEX" ref="RINDEX0x2955d50"/>
+		<D value ="1E-25" unit="g/cm3"/>
+		<fraction n="1.0" ref="videRef"/>
+	</material>
+<!-- Start GLASS material -->
+        <material name="Glass0x2eee130" state="solid">
+	  <property name="ABSLENGTH" ref="ABSLENGTH0x2f09d10"/>
+	  <property name="RINDEX" ref="RINDEX0x2f0aa60"/>
+	  <D unit="g/cm3" value="1.032"/>
+	  <fraction n="0.91533" ref="Carbon0x2fc4110"/>
+	  <fraction n="0.08467" ref="Hidrogen0x2fc3f90"/>
+	</material>
+<!-- Start EJ232 scintilator -->
+<!--        <material name="EJ2320x2fc7130" state="solid">
+	  <property name="ABSLENGTH" ref="ABSLENGTH0x2f72d70"/>
+	  <property name="FASTCOMPONENT" ref="FASTCOMPONENT0x2eefa00"/>
+	  <property name="RINDEX" ref="RINDEX0x2fc1ff0"/>
+	  <T unit="K" value="293.15"/>
+	  <D unit="g/cm3" value="1.02"/>
+	  <fraction n="0.0846734242816859" ref="Hidrogen0x2fc3f90"/>
+	  <fraction n="0.915326575718314" ref="Carbon0x2fc4110"/>
+	</material>
+-->
+<!-- Start EJ232 scintilator -->
+        <material name="EJ2800x2fc7a90" state="solid">
+	  <property name="RINDEX" ref="RINDEX0x2ef4a40"/>
+	  <property name="WLSABSLENGTH" ref="WLSABSLENGTH0x2ef5030"/>
+	  <property name="WLSCOMPONENT" ref="WLSCOMPONENT0x2ef5d50"/>
+<!--	  
+<property name="WLSTIMECONSTANT" ref="WLSTIMECONSTANT" />  
+-->
+	  <T unit="K" value="293.15"/>
+	  <D unit="g/cm3" value="1.023"/>
+	  <fraction n="0.0846734242816859" ref="Hidrogen0x2fc3f90"/>
+	  <fraction n="0.915326575718314" ref="Carbon0x2fc4110"/>
+	</material>
+</materials>
+

@@ -1,0 +1,12 @@
+/vis/scene/create
+/vis/open OGLIQt
+/vis/viewer/flush
+/tracking/storeTrajectory 1
+/vis/scene/add/trajectories
+/vis/scene/endOfEventAction accumulate 10000
+/vis/geometry/set/forceLineSegmentsPerCircle all 0 300
+/vis/viewer/update
+/vis/viewer/set/viewpointThetaPhi 90 89.99 deg
+/vis/viewer/panTo 30.0 0.0 cm
+/vis/viewer/zoom 4.0
+#/vis/viewer/set/style surface

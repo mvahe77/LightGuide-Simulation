@@ -1,0 +1,45 @@
+  *******************************************
+  *                                         *
+  *        W E L C O M E  to  R O O T       *
+  *                                         *
+  *   Version  5.28/00g 14 September 2011   *
+  *                                         *
+  *  You are welcome to visit our Web site  *
+  *          http://root.cern.ch            *
+  *                                         *
+  *******************************************
+
+ROOT 5.28/00g (tags/v5-28-00g@40876, Sep 14 2011, 15:32:32 on linuxx8664gcc)
+
+CINT/ROOT C/C++ Interpreter version 5.18.00, July 2, 2010
+Type ? for help. Commands must be C++ statements.
+Enclose multiple statements between { }.
+
+Processing getRadius1.C...
+D = 136.200000
+R   = 101.2521999999999878
+R+d = 109.2521999999999878
+
+    ang = 40.3170988314493073
+ 90-ang   49.6829011685506927
+180-ang   139.6829011685506998
+270-ang   229.6829011685506998
+
+D = 136.1999999999999886
+LG Xpos1 = 
+<tube name = "sSeg1"   rmin="101.2521999999999878"     rmax="109.2521999999999878"      z="35.5" deltaphi="40.3170988314493073" startphi="49.6829011685506927"  aunit="deg" lunit= "mm"/> 
+<position name="posSeg1" x="53.25" y="-101.2521999999999878" z="-5.4"/> 
+<tube name = "sSeg5"   rmin="101.2521999999999878"     rmax="109.2521999999999878"      z="35.5" deltaphi="40.3170988314493073" startphi="229.6829011685506998"  aunit="deg" lunit= "mm"/> 
+<position name="posSeg5" x="53.25" y="59.2521999999999878" z="-141.6"/> 
+<tube name = "sSeg2"   rmin="116.9192857142857065"     rmax="124.9192857142857065"      z="35.5" deltaphi="34.2763904942114195" startphi="55.7236095057885805"  aunit="deg" lunit= "mm"/> 
+<position name="posSeg2" x="17.75" y="-116.9192857142857065" z="-5.4"/> 
+<tube name = "sSeg6"   rmin="116.9192857142857065"     rmax="124.9192857142857065"      z="35.5" deltaphi="34.2763904942114195" startphi="235.7236095057885734"  aunit="deg" lunit= "mm"/> 
+<position name="posSeg6" x="17.75" y="82.9192857142857065" z="-141.6"/> 
+<tube name = "sSeg3"   rmin="140.9002941176470358"     rmax="148.9002941176470358"      z="35.5" deltaphi="28.0328906834461158" startphi="61.9671093165538878"  aunit="deg" lunit= "mm"/> 
+<position name="posSeg3" x="-17.75" y="-140.9002941176470358" z="-5.4"/> 
+<tube name = "sSeg7"   rmin="140.9002941176470358"     rmax="148.9002941176470358"      z="35.5" deltaphi="28.0328906834461158" startphi="241.9671093165538878"  aunit="deg" lunit= "mm"/> 
+<position name="posSeg7" x="-17.75" y="114.9002941176470358" z="-141.6"/> 
+<tube name = "sSeg4"   rmin="180.8696153846153720"     rmax="188.8696153846153720"      z="35.5" deltaphi="21.6149859460823990" startphi="68.3850140539176010"  aunit="deg" lunit= "mm"/> 
+<position name="posSeg4" x="-53.25" y="-180.8696153846153720" z="-5.4"/> 
+<tube name = "sSeg8"   rmin="180.8696153846153720"     rmax="188.8696153846153720"      z="35.5" deltaphi="21.6149859460823990" startphi="248.3850140539175868"  aunit="deg" lunit= "mm"/> 
+<position name="posSeg8" x="-53.25" y="162.8696153846153720" z="-141.6"/> 
